@@ -37,8 +37,16 @@ const articles = ref([]);
 
 async function load() {
   try {
-    const response = await axios.get('http://localhost:3000/articles');
-    articles.value = response.data;
+    const storedArticles = localStorage.getItem('articles');
+    if (storedArticles) {
+      articles.value = JSON.parse(storedArticles);
+    } else {
+      // Jika tidak ada data di localStorage, lakukan permintaan ke server
+      const response = await axios.get('http://localhost:3000/articles');
+      articles.value = response.data;
+      // Simpan data ke localStorage
+      localStorage.setItem('articles', JSON.stringify(response.data));
+    }
   } catch (error) {
     console.error('Error loading articles', error);
   }
