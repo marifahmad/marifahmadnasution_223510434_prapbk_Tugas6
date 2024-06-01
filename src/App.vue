@@ -35,11 +35,13 @@
       <thead>
         <tr>
           <th>No</th>
-          <th style="width: 200px;">Tanggal Kunjungan</th>
+          <th style="width: 165px;">Tanggal Kunjungan</th>
           <th>Wisatawan</th>
-          <th style="width: 80px; text-align: center;">Usia</th>
-          <th style="width: 150px;">Jenis Kelamin</th>
-          <th>Aksi</th>
+          <th style="width:90px; text-align: center;">Usia</th>
+          <th style="width: 120px;">Jenis Kelamin</th>
+          <th style="width: 120px;">Negara Asal</th>
+          <th style="width: 150px;">Durasi Kunjungan</th>
+          <th style="width: 150px; text-align: center;">Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -49,9 +51,14 @@
           <td>{{ article.wisatawan }}</td>
           <td>{{ article.usia }}</td>
           <td>{{ article.gender }}</td>
-          <td style="padding: 10px;">
-            <button class="edit-button" style=" background-color: rgb(11, 182, 240); font-size: 15px; width: 50px; padding: none;" @click="editArticle(article)"><i class="fas fa-edit edit-button" style="padding-top: 10px; padding-bottom: 10px; padding-right: 10px;background-color: rgb(11, 182, 240)"></i></button>
-            <button class="delete-button" style=" background-color: #d32f2f; margin-top: 10px; font-size: 15px; width: 50px; padding: none;" @click="deleteArticle(article.id)"><i class="fas fa-trash delete-button" style="padding-top: 10px;  padding-bottom: 10px; padding-right: 10px; background-color: #d32f2f;" ></i></button>
+          <td>{{ article.turis }}</td>
+          <td>{{ article.durasi }}</td>
+          
+
+          
+          <td style="">
+            <button class="edit-button" style=" background-color: rgb(11, 182, 240); font-size: 15px; width: 50px; padding: none; margin-right: 10px; margin-bottom: 5px;" @click="editArticle(article)"><i class="fas fa-edit edit-button" style="background-color: rgb(11, 182, 240)"></i></button>
+            <button class="delete-button" style=" background-color: #d32f2f; margin-top: 10px; font-size: 15px; width: 50px; padding: none; margin-bottom: 5px;" @click="deleteArticle(article.id)"><i class="fas fa-trash delete-button" style="background-color: #d32f2f;" ></i></button>
           </td>
         </tr>
       </tbody>
@@ -88,7 +95,7 @@ export default {
       usia: '',
       gender: '',
       turis: '',
-      durasi: ''
+      durasi:''
     });
 
     const fetchData = async () => {
@@ -160,7 +167,7 @@ export default {
       form.usia = article.usia;
       form.gender = article.gender;
       form.turis = article.turis;
-      form.durasi = article.durasi;
+      form.durasi =article.durasi;
       showModal.value = true;
     };
 
@@ -187,6 +194,8 @@ export default {
         form.gender = '';
         form.turis = '';
         form.durasi = '';
+        
+       
         showModal.value = false;
         isEditMode.value = false;
         currentArticleId.value = null;
@@ -237,7 +246,7 @@ body {
   color: #fff;
   text-align: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 1400px;
 }
 
 .add-button {
@@ -353,7 +362,7 @@ footer {
   text-align: center;
   border-radius: 10px;
   width: 100%;
-  max-width: 600px;
+  max-width: 1500px;
 }
 
 footer p {
