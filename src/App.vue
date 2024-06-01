@@ -1,21 +1,61 @@
 <template>
   <div class="container">
-    <form @submit.prevent="save">
-  <h1 style="color: #fff">Integrasi dengan API</h1>
-      
-      <input type="text" v-model="form.title" placeholder="Title" /><br />
-      <textarea v-model="form.content" placeholder="Content"></textarea><br />
-      <button type="submit">Save</button>
-    </form>
-    <ul>
-      <li v-for="article in articles" :key="article.id">
-        {{ article.title }}<br />
-        {{ article.content }}<br />
-        <button class="edit" @click="edit(article)">Edit</button>
-        <button @click="remove(article.id)">Delete</button>
-      </li>
-    </ul>
-    <button @click="load">Load</button>
+    <button @click="showModal = true; isEditMode = false;" class="add-button">Tambah Data</button>
+    <h2 style="text-align: start;">Data Pariwisata</h2>
+    <div v-if="showModal" class="modal" style="margin-top: 20px;">
+      <div class="modal-content">
+        
+        <span class="close" @click="showModal = false">&times;</span>
+        <h2 style="color: #0000009e;">{{ isEditMode ? 'Edit Data' : 'Data Pariwisata' }}</h2>
+        <form @submit.prevent="onSubmit">
+          <input type="date" v-model="form.tanggal" placeholder="Tanggal" required />
+          <input type="text" v-model="form.wisatawan" placeholder="Wisatawan" required />
+          <input type="text" v-model="form.usia" placeholder="Usia" required />
+          <h4 style="color: #0000009e; text-align: start;">Jenis Kelamin</h4>
+
+         
+          <div class="radio-label" style="margin-bottom: 10px;">
+  <label>
+    
+    <input type="radio" v-model="form.gender" value="Laki-laki" /> Laki-laki
+  </label>
+  <label>
+    <input type="radio" v-model="form.gender" value="Perempuan" /> Perempuan
+  </label>
+</div>
+
+          <input type="text" v-model="form.turis" placeholder="Negara Asal" required />
+          <input type="text" v-model="form.durasi" placeholder="Durasi Kunjungan" required />
+
+          <button type="submit" class="submit-button">{{ isEditMode ? 'Update' : 'Tambah' }}</button>
+        </form>
+      </div>
+    </div>
+    <table class="article-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th style="width: 200px;">Tanggal Kunjungan</th>
+          <th>Wisatawan</th>
+          <th style="width: 80px; text-align: center;">Usia</th>
+          <th style="width: 150px;">Jenis Kelamin</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(article, index) in articles" :key="article.id">
+          <td>{{ index + 1 }}</td>
+          <td > {{ article.tanggal }}</td>
+          <td>{{ article.wisatawan }}</td>
+          <td>{{ article.usia }}</td>
+          <td>{{ article.gender }}</td>
+          <td style="padding: 10px;">
+            <button class="edit-button" style=" background-color: rgb(11, 182, 240); font-size: 15px; width: 50px; padding: none;" @click="editArticle(article)"><i class="fas fa-edit edit-button" style="padding-top: 10px; padding-bottom: 10px; padding-right: 10px;background-color: rgb(11, 182, 240)"></i></button>
+            <button class="delete-button" style=" background-color: #d32f2f; margin-top: 10px; font-size: 15px; width: 50px; padding: none;" @click="deleteArticle(article.id)"><i class="fas fa-trash delete-button" style="padding-top: 10px;  padding-bottom: 10px; padding-right: 10px; background-color: #d32f2f;" ></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <footer>
     <p>&copy; 2024 Integrasi Dengan API. All rights reserved.</p>
@@ -23,77 +63,158 @@
   </footer>
 </template>
 
-<script setup>
+<script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { reactive, ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const form = reactive({
-  id: null,
-  title: '',
-  content: '',
-});
+export default {
+  components: {
+    FontAwesomeIcon
+  },
+  setup() {
+    const articles = ref([]);
+    const binId = '665a5652acd3cb34a850d96b'; // Replace with your actual bin ID from JSON Bin
+    const apiKey = '$2a$10$3h0EzbkfDqg5XVaa/5AIW.PX9kFIUSnu54dNCGtFLY4ZO6l2Sulq.'; // Replace with your actual API key from JSON Bin
+    const baseUrl = `https://api.jsonbin.io/v3/b/${binId}`;
 
-const articles = ref([]);
+    const showModal = ref(false);
+    const isEditMode = ref(false);
+    const currentArticleId = ref(null);
 
-async function load() {
-  try {
-    const storedArticles = localStorage.getItem('articles');
-    if (storedArticles) {
-      articles.value = JSON.parse(storedArticles);
-    } else {
-      // Jika tidak ada data di localStorage, lakukan permintaan ke server
-      const response = await axios.get('http://localhost:3000/articles');
-      articles.value = response.data;
-      // Simpan data ke localStorage
-      localStorage.setItem('articles', JSON.stringify(response.data));
-    }
-  } catch (error) {
-    console.error('Error loading articles', error);
+    const form = reactive({
+      tanggal: '',
+      wisatawan: '',
+      usia: '',
+      gender: '',
+      turis: '',
+      durasi: ''
+    });
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(baseUrl, {
+          headers: {
+            'X-Master-Key': apiKey
+          }
+        });
+        articles.value = response.data.record.articles;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const addData = async (newData) => {
+      try {
+        const response = await axios.put(baseUrl, { articles: [...articles.value, newData] }, {
+          headers: {
+            'X-Master-Key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Error adding data:', error);
+        throw error;
+      }
+    };
+
+    const updateData = async (id, updatedData) => {
+      try {
+        const updatedArticles = articles.value.map(article =>
+          article.id === id ? updatedData : article
+        );
+        const response = await axios.put(baseUrl, { articles: updatedArticles }, {
+          headers: {
+            'X-Master-Key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Error updating data:', error);
+        throw error;
+      }
+    };
+
+    const deleteArticle = async (id) => {
+      try {
+        const updatedArticles = articles.value.filter(article => article.id !== id);
+        await axios.put(baseUrl, { articles: updatedArticles }, {
+          headers: {
+            'X-Master-Key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        });
+        await fetchData();
+      } catch (error) {
+        console.error('Error deleting article:', error);
+      }
+    };
+
+    const editArticle = (article) => {
+      isEditMode.value = true;
+      currentArticleId.value = article.id;
+      form.tanggal = article.tanggal;
+      form.wisatawan = article.wisatawan;
+      form.usia = article.usia;
+      form.gender = article.gender;
+      form.turis = article.turis;
+      form.durasi = article.durasi;
+      showModal.value = true;
+    };
+
+    const onSubmit = async () => {
+      try {
+        const newData = {
+          tanggal: form.tanggal,
+          wisatawan: form.wisatawan,
+          usia: form.usia,
+          gender: form.gender,
+          turis: form.turis,
+          durasi: form.durasi,
+          id: isEditMode.value ? currentArticleId.value : new Date().toISOString() // Generating unique ID for new articles
+        };
+
+        if (isEditMode.value) {
+          await updateData(currentArticleId.value, newData);
+        } else {
+          await addData(newData);
+        }
+        form.tanggal = '';
+        form.wisatawan = '';
+        form.usia = '';
+        form.gender = '';
+        form.turis = '';
+        form.durasi = '';
+        showModal.value = false;
+        isEditMode.value = false;
+        currentArticleId.value = null;
+        await fetchData();
+      } catch (error) {
+        console.error('Error adding/updating data:', error);
+      }
+    };
+
+    onMounted(async () => {
+      await fetchData();
+    });
+
+    return {
+      articles,
+      showModal,
+      isEditMode, 
+      currentArticleId,
+      form,
+      fetchData,
+      addData,
+      updateData,
+      deleteArticle,
+      editArticle,
+      onSubmit
+    };
   }
-}
-
-async function save() {
-  try {
-    const url = form.id
-      ? `http://localhost:3000/articles/${form.id}`
-      : 'http://localhost:3000/articles';
-    const method = form.id ? 'put' : 'post';
-    const response = await axios[method](url, form);
-
-    if (form.id) {
-      // Update existing article in the articles array
-      articles.value = articles.value.map((article) =>
-        article.id === response.data.id ? response.data : article
-      );
-    } else {
-      // Add new article to the articles array
-      articles.value.push(response.data);
-    }
-
-    form.id = null;
-    form.title = '';
-    form.content = '';
-  } catch (error) {
-    console.error('Error saving articles', error);
-  }
-}
-
-async function remove(id) {
-  try {
-    await axios.delete(`http://localhost:3000/articles/${id}`);
-    articles.value = articles.value.filter((article) => article.id !== id);
-  } catch (error) {
-    console.error('Error removing article', error);
-  }
-}
-
-function edit(article) {
-  form.id = article.id;
-  form.title = article.title;
-  form.content = article.content;
-}
-
-onMounted(load);
+};
 </script>
 
 <style>
@@ -102,22 +223,42 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: url('/src/assets/img/jepangmalam.jpeg') no-repeat;
-  background-size: cover;
-  background-position: center;
+  background: url('/src/assets/img/jepangmalam.jpeg') no-repeat center center/cover;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
 }
 
 .container {
-  background: transparent;
-  border: 2px solid rgb(255, 255, 255, 0.2);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 10px;
-  padding: 30px 40px;
+  padding: 20px 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.add-button {
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #45a049;
 }
 
 input[type="text"],
+input[type="date"],
+input[type="checkbox"],
+
 textarea {
   width: 100%;
   padding: 10px;
@@ -126,52 +267,83 @@ textarea {
   border-radius: 5px;
   box-sizing: border-box;
 }
+.radio-label {
+  display: block;
+  text-align: left;
+  margin-right: 10px; /* Sesuaikan jarak sesuai kebutuhan */
+}
 
-button {
+.radio-text {
+  margin-left: 5px; /* Sesuaikan jarak sesuai kebutuhan */
+}
+
+/* Gaya untuk label yang berisi tombol radio "Laki-laki" */
+.radio-label label:nth-child(1) {
+  color: blue; /* Misalnya, memberikan warna biru untuk "Laki-laki" */
+}
+
+/* Gaya untuk label yang berisi tombol radio "Perempuan" */
+.radio-label label:nth-child(2) {
+  color: red; /* Misalnya, memberikan warna merah untuk "Perempuan" */
+}
+.submit-button {
   padding: 10px 20px;
-  margin-top: 10px;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
+.submit-button:hover {
   background-color: #45a049;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.article-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-li {
-  border: 1px solid #ddd;
+.article-table th {
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: left;
 }
 
-li button {
-  margin-left: 10px;
-  background-color: #f44336;
+.article-table th {
+  background-color: #4caf50;
   color: white;
+}
+
+.article-table td {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #252020;
+  position: relative;
+}
+
+.article-table .edit-button{
   border: none;
   border-radius: 5px;
+  cursor: pointer;
+ 
 }
 
-li button.edit {
-  background-color: rgb(17, 170, 221);
+.article-table .delete-button {
+  border: none;
+  border-radius: 5px;
+  
 }
 
-li button.edit:hover {
-  background-color: rgb(11, 182, 240);
-}
 
-li button:hover {
-  background-color: #d32f2f;
-}
+
+
+
+
+
+
+
 
 footer {
   margin-top: 20px;
@@ -180,6 +352,8 @@ footer {
   color: #fff;
   text-align: center;
   border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
 }
 
 footer p {
@@ -193,5 +367,42 @@ footer a {
 
 footer a:hover {
   text-decoration: underline;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  color: #aaa;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: #ff0000;
 }
 </style>

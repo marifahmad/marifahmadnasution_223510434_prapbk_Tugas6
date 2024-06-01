@@ -10,7 +10,11 @@
     "start": "json-server --watch db.json"
   },
   "dependencies": {
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "axios": "^1.7.2",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
     "json-server": "^1.0.0-beta.0",
     "vue": "^3.4.21"
   },

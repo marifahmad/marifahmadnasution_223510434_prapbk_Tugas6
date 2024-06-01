@@ -1,19 +1,32 @@
-{
-  "articles": [
+ [
     {
-      "id": "1",
-      "title": "judul",
-      "content": "Ini Content"
+      "no": 1,
+      "title": "Judul Artikel Pertama",
+      "author": "Penulis Artikel Pertama dan awal",
+      "id": "d636"
     },
     {
-      "id": "2",
-      "title": "judul 2",
-      "content": "ini content 2"
+      "no": 2,
+      "title": "Judul Artikel Kedua",
+      "author": "Penulis Artikel Kedua",
+      "id": "b7f8"
     },
     {
-      "id": "3",
-      "title": "judul 3",
-      "content": "ini content 3"
+      "id": "bae0",
+      "no": "3",
+      "title": "bahasa indonesia",
+      "author": "m. arif ahmad nasution"
+    },
+    {
+      "id": "73fe",
+      "no": "4",
+      "title": "ipa",
+      "author": "arif"
+    },
+    {
+      "id": "a8c2",
+      "no": "5",
+      "title": "ips",
+      "author": "nasution"
     }
   ]
-}
