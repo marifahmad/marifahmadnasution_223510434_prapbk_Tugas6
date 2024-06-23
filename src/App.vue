@@ -103,7 +103,7 @@ export default {
     // Data tugas
     const tasks = reactive([
       { title: 'Tugas 1', url: 'https://ahmad-projectcv.netlify.app' },
-      { title: 'Tugas 2', url: 'https://FreeTugas' },
+      { title: 'Tugas 2', url: 'https://marifahmadn-223510434-lab-t2freetugas.netlify.app~' },
       { title: 'Tugas 3', url: 'https://marifahmad.netlify.app/' },
       { title: 'Tugas 4', url: 'https://marifahmad-223510434-prapbk.netlify.app' },
       { title: 'Tugas 5', url: 'https://marifahmad-223510434-ppbk-t5-landingp.netlify.app' },
