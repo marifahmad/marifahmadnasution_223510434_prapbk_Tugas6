@@ -67,7 +67,7 @@
     <div class="listnya" style="text-align: center; display: flex; align-items: center; justify-content: center;">
       <ul>
         <li v-for="(task, index) in tasks" :key="index">
-          <a :href="task.url" target="_blank" @click="showAlert(task)">{{ task.title }}</a>
+          <a :href="task.url" target="_self" @click="showAlert(task)">{{ task.title }}</a>
         </li>
       </ul>
     </div>
@@ -112,8 +112,8 @@ export default {
     ]);
     const showTasks = ref(false);
     const articles = ref([]);
-    const binId = '665a5652acd3cb34a850d96b'; // Replace with your actual bin ID from JSON Bin
-    const apiKey = '$2a$10$3h0EzbkfDqg5XVaa/5AIW.PX9kFIUSnu54dNCGtFLY4ZO6l2Sulq.'; // Replace with your actual API key from JSON Bin
+    const binId = '665a5652acd3cb34a850d96b'; 
+    const apiKey = '$2a$10$3h0EzbkfDqg5XVaa/5AIW.PX9kFIUSnu54dNCGtFLY4ZO6l2Sulq.'; 
     const baseUrl = `https://api.jsonbin.io/v3/b/${binId}`;
 
     const showModal = ref(false);
@@ -315,21 +315,21 @@ textarea {
 .radio-label {
   display: block;
   text-align: left;
-  margin-right: 10px; /* Sesuaikan jarak sesuai kebutuhan */
+  margin-right: 10px; 
 }
 
 .radio-text {
-  margin-left: 5px; /* Sesuaikan jarak sesuai kebutuhan */
+  margin-left: 5px; 
 }
 
-/* Gaya untuk label yang berisi tombol radio "Laki-laki" */
+
 .radio-label label:nth-child(1) {
-  color: blue; /* Misalnya, memberikan warna biru untuk "Laki-laki" */
+  color: blue; 
 }
 
-/* Gaya untuk label yang berisi tombol radio "Perempuan" */
+
 .radio-label label:nth-child(2) {
-  color: red; /* Misalnya, memberikan warna merah untuk "Perempuan" */
+  color: red; 
 }
 .submit-button {
   padding: 10px 20px;
@@ -406,15 +406,15 @@ textarea {
   width: 200px;
   padding: 10px 20px;
   background-color: #4caf50;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efek transisi untuk animasi zoom dan bayangan */
-  display: block; /* Menjadikan item tugas menempati satu baris */
-  border-radius: 5px; /* Agar pinggiran elemen tugas lebih halus */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan standar */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  display: block; 
+  border-radius: 5px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .task-list li:hover {
-  transform: scale(1.1); /* Memperbesar elemen saat dihover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Bayangan lebih intens saat dihover */
+  transform: scale(1.1); 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
 }
 
 .task-list a {
@@ -422,7 +422,7 @@ textarea {
   color: #fff;
   text-decoration: none;
   transition: color 0.3s ease;
-  display: block; /* Agar teks dalam tautan ditampilkan dalam satu baris */
+  display: block; 
 }
 
 .task-list a:hover {
